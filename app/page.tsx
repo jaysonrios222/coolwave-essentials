@@ -16,7 +16,7 @@ export default function CoolingStore() {
       description:
         "Instant evaporative cooling — reusable, breathable, and built for extreme heat.",
       image:
-        "https://cdn.shopify.com/s/files/1/0000/0000/products/cooling-towel.jpg",
+        "blob:https://admin.shopify.com/6d18b9be-afc3-4ac4-8d56-764da5fcca37",
       shopifyUrl:
         "https://coolwave-essentials.myshopify.com/products/instant-cooling-towel",
     },
