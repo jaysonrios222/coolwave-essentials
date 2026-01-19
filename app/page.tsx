@@ -1,65 +1,152 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Snowflake, Sun, Droplets, ShieldCheck, Truck, Star } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function CoolingStore() {
+  const mainProduct = {
+    name: "Instant Cooling Towel",
+    image: "/images/cooling-towel.jpg",
+    price: "$14.99",
+    description: "Instant evaporative cooling — reusable, breathable, and built for extreme heat.",
+  };
+
+  const bundles = [
+    {
+      name: "Cooling Towel 2‑Pack",
+      image: "/images/cooling-towel-2-pack.jpg",
+      price: "$24.99",
+      description: "Best value for daily use or sharing.",
+      tag: "Most Popular",
+    },
+    {
+      name: "Cooling Neck Wrap",
+      image: "/images/cooling-neck-wrap.jpg",
+      price: "$18.99",
+      description: "Targeted neck cooling for work, travel, and workouts.",
+      tag: "Add‑On",
+    },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
+
+      {/* HERO / ABOVE THE FOLD */}
+      <section className="max-w-6xl mx-auto px-6 pt-16 grid lg:grid-cols-2 gap-12 items-center">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+            Beat Extreme Heat — Instantly
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg text-gray-600 mb-6">
+            Stay cool anywhere with instant evaporative cooling. No batteries. No electricity. Just relief.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <ul className="space-y-3 mb-6">
+            <li className="flex items-center gap-2"><Snowflake className="h-5 w-5 text-sky-500" /> Activates in seconds</li>
+            <li className="flex items-center gap-2"><Droplets className="h-5 w-5 text-sky-500" /> Reusable & breathable</li>
+            <li className="flex items-center gap-2"><Sun className="h-5 w-5 text-sky-500" /> Built for hot climates</li>
+          </ul>
+          <Button
+            size="lg"
+            className="rounded-xl w-full sm:w-auto"
+            onClick={() => window.location.href = "https://yourstore.myshopify.com/cart/PRODUCT_ID:1"}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Buy Now — {mainProduct.price}
+          </Button>
+          <div className="flex items-center gap-2 mt-4 text-sm text-gray-500">
+            <Star className="h-4 w-4 text-yellow-400" /> Rated 4.8/5 by outdoor workers & travelers
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+          <div className="w-full rounded-2xl overflow-hidden shadow-lg">
+            <div className="flex overflow-x-auto snap-x snap-mandatory">
+              {["/images/cooling-towel.jpg", "/images/cooling-towel-2-pack.jpg", "/images/cooling-neck-wrap.jpg"].map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt={mainProduct.name}
+                  className="w-full aspect-[4/3] object-cover snap-center flex-shrink-0"
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* SOCIAL PROOF */}
+      <section className="max-w-5xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-bold text-center mb-10">Trusted in Hot Climates Worldwide</h2>
+        <div className="grid sm:grid-cols-3 gap-6">
+          {["Texas", "Florida", "Arizona"].map((region, i) => (
+            <Card key={i} className="rounded-2xl shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <Star className="h-4 w-4 text-yellow-400" />
+                </div>
+                <p className="text-gray-600 mb-2">“This towel saved me working outdoors in {region} heat. Instant relief.”</p>
+                <span className="text-sm text-gray-500">Verified Customer · {region}</span>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* TRUST STRIP */}
+
+      {/* STICKY MOBILE CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg p-4 flex sm:hidden">
+        <Button
+          size="lg"
+          className="rounded-xl w-full"
+          onClick={() => window.location.href = "https://yourstore.myshopify.com/cart/PRODUCT_ID:1"}
+        >
+          Buy Now — {mainProduct.price}
+        </Button>
+      </div>
+
+      <section className="flex flex-wrap justify-center gap-6 py-12 text-sm text-gray-600">
+        <div className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-sky-500" /> 30‑Day Guarantee</div>
+        <div className="flex items-center gap-2"><Truck className="h-5 w-5 text-sky-500" /> Fast Shipping</div>
+        <div className="flex items-center gap-2"><Snowflake className="h-5 w-5 text-sky-500" /> Designed for Extreme Heat</div>
+      </section>
+
+      {/* BUNDLES / UPSELLS */}
+      <section className="max-w-6xl mx-auto px-6 pb-20">
+        <h2 className="text-3xl font-bold text-center mb-10">Save More & Stay Cooler</h2>
+        <div className="grid sm:grid-cols-2 gap-6">
+          {bundles.map((product, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+              <Card className="rounded-2xl shadow-md h-full">
+                <CardContent className="p-6 flex flex-col gap-4 h-full">
+                  <div className="w-full aspect-[4/3] rounded-xl overflow-hidden">
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs uppercase tracking-wide bg-sky-100 text-sky-700 px-3 py-1 rounded-full w-fit">
+                    {product.tag}
+                  </span>
+                  <h3 className="text-xl font-semibold">{product.name}</h3>
+                  <p className="text-gray-600 flex-grow">{product.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xl font-bold">{product.price}</span>
+                    <Button className="rounded-xl">Add</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="text-center text-sm text-gray-500 pb-10">
+        © {new Date().getFullYear()} Coolwave Essentials · Built for hot climates
+      </footer>
     </div>
   );
 }
