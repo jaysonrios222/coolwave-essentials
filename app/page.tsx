@@ -1,129 +1,183 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+<header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
+  <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div className="flex items-center gap-3">
+      <img
+        src="/images/coolwave-logo.png"
+        alt="Coolwave Essentials"
+        className="h-8 w-auto sm:h-10"
+      />
+      <span className="sr-only">Coolwave Essentials</span>
+    </div>
+
+    <a
+      href="https://coolwave-essentials.myshopify.com"
+      className="text-sm font-medium text-gray-700 hover:text-black"
+    >
+      Shop
+    </a>
+  </div>
+</header>
+
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Snowflake, Sun, Droplets, ShieldCheck, Truck, Star } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { Snowflake, Droplets, Sun, Star } from "lucide-react";
+
+const SHOPIFY_DOMAIN = "coolwave-essentials.myshopify.com";
+const STOREFRONT_TOKEN = process.env.NEXT_PUBLIC_SHOPIFY_TOKEN!;
+
+type Product = {
+  id: string;
+  title: string;
+  handle: string;
+  image: string;
+  price: string;
+};
 
 export default function CoolingStore() {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
-
-  const products = [
-    {
-      name: "Instant Cooling Towel",
-      price: "$14.99",
-      description:
-        "Instant evaporative cooling — reusable, breathable, and built for extreme heat.",
-      image:
-        "blob:https://admin.shopify.com/6d18b9be-afc3-4ac4-8d56-764da5fcca37",
-      shopifyUrl:
-        "https://coolwave-essentials.myshopify.com/products/instant-cooling-towel",
-    },
-    {
-      name: "Cooling Towel 2-Pack",
-      price: "$24.99",
-      description: "Best value for daily use or sharing.",
-      image:
-        "https://cdn.shopify.com/s/files/1/0000/0000/products/cooling-towel-2-pack.jpg",
-      shopifyUrl:
-        "https://coolwave-essentials.myshopify.com/products/cooling-towel-2-pack",
-    },
-    {
-      name: "Cooling Neck Wrap",
-      price: "$18.99",
-      description: "Targeted neck cooling for work, travel, and workouts.",
-      image:
-        "https://cdn.shopify.com/s/files/1/0000/0000/products/cooling-neck-wrap.jpg",
-      shopifyUrl:
-        "https://coolwave-essentials.myshopify.com/products/cooling-neck-wrap",
-    },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const slider = sliderRef.current;
-    if (!slider) return;
+    async function loadProducts() {
+      const res = await fetch(
+        `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
+          },
+          body: JSON.stringify({
+            query: `
+            {
+              products(first: 6) {
+                edges {
+                  node {
+                    title
+                    handle
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                    variants(first: 1) {
+                      edges {
+                        node {
+                          price {
+                            amount
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }`,
+          }),
+        }
+      );
+
+      const json = await res.json();
+      const items = json.data.products.edges.map((p: any) => ({
+        title: p.node.title,
+        handle: p.node.handle,
+        image: p.node.images.edges[0]?.node.url,
+        price: `$${Number(p.node.variants.edges[0].node.price.amount).toFixed(2)}`,
+      }));
+
+      setProducts(items);
+    }
+
+    loadProducts();
+  }, []);
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    if (!sliderRef.current || products.length === 0) return;
 
     let index = 0;
     const interval = setInterval(() => {
       index = (index + 1) % products.length;
-      slider.scrollTo({
-        left: slider.clientWidth * index,
+      sliderRef.current!.scrollTo({
+        left: sliderRef.current!.clientWidth * index,
         behavior: "smooth",
       });
-    }, 4000);
+    }, 4500);
 
     return () => clearInterval(interval);
-  }, [products.length]);
+  }, [products]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white pb-24 sm:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white pb-24">
+
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 grid lg:grid-cols-2 gap-10 items-center">
+      <section className="max-w-6xl mx-auto px-4 pt-12 grid lg:grid-cols-2 gap-10 items-center">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
             Beat Extreme Heat — Instantly
           </h1>
 
-          <p className="text-base sm:text-lg text-gray-600 mb-6">
-            Stay cool anywhere with instant evaporative cooling. No batteries. No
-            electricity. Just relief.
+          <p className="text-gray-600 mb-6">
+            Cooling solutions designed for hot climates. No batteries. No bulk.
+            Just relief.
           </p>
 
-          <ul className="space-y-3 mb-6 text-sm sm:text-base">
-            <li className="flex items-center gap-2">
-              <Snowflake className="h-5 w-5 text-sky-500" />
-              Activates in seconds
-            </li>
-            <li className="flex items-center gap-2">
-              <Droplets className="h-5 w-5 text-sky-500" />
-              Reusable & breathable
-            </li>
-            <li className="flex items-center gap-2">
-              <Sun className="h-5 w-5 text-sky-500" />
-              Built for hot climates
-            </li>
+          <ul className="space-y-3 mb-6">
+            <li className="flex gap-2"><Snowflake className="text-sky-500" /> Activates instantly</li>
+            <li className="flex gap-2"><Droplets className="text-sky-500" /> Reusable & breathable</li>
+            <li className="flex gap-2"><Sun className="text-sky-500" /> Built for extreme heat</li>
           </ul>
 
-          <Button
-            size="lg"
-            className="rounded-xl w-full sm:w-auto"
-            onClick={() => (window.location.href = products[0].shopifyUrl)}
-          >
-            Buy Now — {products[0].price}
-          </Button>
+          {products[0] && (
+            <Button
+              size="lg"
+              className="rounded-xl w-full sm:w-auto"
+              onClick={() =>
+                (window.location.href =
+                  `https://${SHOPIFY_DOMAIN}/products/${products[0].handle}`)
+              }
+            >
+              Buy Now — {products[0].price}
+            </Button>
+          )}
 
-          <div className="flex items-center gap-2 mt-4 text-xs sm:text-sm text-gray-500">
+          <div className="flex items-center gap-2 mt-4 text-sm text-gray-500">
             <Star className="h-4 w-4 text-yellow-400" />
-            Rated 4.8/5 by outdoor workers & travelers
+            Rated 4.8/5 by outdoor workers
           </div>
         </motion.div>
 
-        {/* PRODUCT SLIDER */}
+        {/* PRODUCT CAROUSEL */}
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-          <div className="w-full rounded-2xl overflow-hidden shadow-lg max-h-[420px] sm:max-h-none">
+          <div className="overflow-hidden rounded-2xl shadow-lg">
             <div
               ref={sliderRef}
-              className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth"
+              className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
             >
-              {products.map((product, i) => (
-                <div key={i} className="min-w-full snap-center p-4 text-center">
+              {products.map((p, i) => (
+                <div
+                  key={i}
+                  className="min-w-full snap-center p-4 text-center"
+                >
                   <img
-                    src={product.image}
-                    alt={product.name}
+                    src={p.image}
+                    alt={p.title}
                     className="w-full aspect-[4/3] object-cover rounded-xl mb-4"
                   />
-                  <h3 className="text-lg sm:text-xl font-semibold">
-                    {product.name}
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-2">
-                    {product.description}
-                  </p>
-                  <span className="text-lg font-bold">{product.price}</span>
+                  <h3 className="text-xl font-semibold">{p.title}</h3>
+                  <span className="text-lg font-bold">{p.price}</span>
+
                   <Button
-                    className="mt-4 rounded-xl w-full"
+                    className="mt-4 w-full rounded-xl"
                     onClick={() =>
-                      (window.location.href = product.shopifyUrl)
+                      (window.location.href =
+                        `https://${SHOPIFY_DOMAIN}/products/${p.handle}`)
                     }
                   >
                     View Product
@@ -135,53 +189,9 @@ export default function CoolingStore() {
         </motion.div>
       </section>
 
-      {/* SOCIAL PROOF */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-10">
-          Trusted in Hot Climates Worldwide
-        </h2>
-
-        <div className="grid sm:grid-cols-3 gap-6">
-          {["Texas", "Florida", "Arizona"].map((region, i) => (
-            <Card key={i} className="rounded-2xl shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  {Array.from({ length: 5 }).map((_, idx) => (
-                    <Star key={idx} className="h-4 w-4 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-2">
-                  “This towel saved me working outdoors in {region} heat. Instant
-                  relief.”
-                </p>
-                <span className="text-sm text-gray-500">
-                  Verified Customer · {region}
-                </span>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* TRUST STRIP */}
-      <section className="flex flex-wrap justify-center gap-6 py-12 text-sm text-gray-600">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-sky-500" />
-          30-Day Guarantee
-        </div>
-        <div className="flex items-center gap-2">
-          <Truck className="h-5 w-5 text-sky-500" />
-          Fast Shipping
-        </div>
-        <div className="flex items-center gap-2">
-          <Snowflake className="h-5 w-5 text-sky-500" />
-          Designed for Extreme Heat
-        </div>
-      </section>
-
       {/* FOOTER */}
-      <footer className="text-center text-sm text-gray-500 pb-10">
-        © {new Date().getFullYear()} Coolwave Essentials · Built for hot climates
+      <footer className="text-center text-sm text-gray-500 py-10">
+        © {new Date().getFullYear()} Coolwave Essentials
       </footer>
     </div>
   );

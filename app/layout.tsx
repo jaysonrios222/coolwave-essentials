@@ -15,7 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Coolwave Essentials | Beat the Heat Instantly",
   description: "Cooling towels, neck wraps, and heat relief essentials designed for hot climates.",
-};
+  icons: {
+	  icon: "C:\Users\thr33\Documents\coolwave-essentials\public\Images\CWE.png",
+  }, 
+ };
+
 
 export default function RootLayout({
   children,
