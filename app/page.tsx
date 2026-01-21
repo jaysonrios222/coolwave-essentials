@@ -115,24 +115,6 @@ export default function Page() {
     Beat Extreme Heat — Instantly
   </h1>
 
-  <p className="text-lg text-gray-600 mb-8">
-    Reusable cooling solutions built for hot climates.
-  </p>
-
-  <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-    <div className="flex items-center gap-2">
-      <Snowflake className="h-4 w-4 text-sky-500" />
-      Instant Cooling
-    </div>
-    <div className="flex items-center gap-2">
-      <Droplets className="h-4 w-4 text-sky-500" />
-      Reusable
-    </div>
-    <div className="flex items-center gap-2">
-      <Sun className="h-4 w-4 text-sky-500" />
-      Extreme Heat Ready
-    </div>
-  </div>
 </section>
 
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
