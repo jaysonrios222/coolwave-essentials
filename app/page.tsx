@@ -1,10 +1,52 @@
-
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useEffect, useState } from "react";
-import { Snowflake, Sun, Droplets, ShieldCheck, Truck, Star } from "lucide-react";
+import {
+  Snowflake,
+  Sun,
+  Droplets,
+  ShieldCheck,
+  Truck,
+  Star,
+} from "lucide-react";
+
+/* =========================
+   SHOPIFY CONFIG (EDIT HERE ONLY)
+   ========================= */
+
+const SHOPIFY_DOMAIN = "coolwave-essentials.myshopify.com";
+const SHOPIFY_TOKEN = process.env.NEXT_PUBLIC_SHOPIFY_BUY_TOKEN;
+
+/*
+  👉 HOW TO ADD / CHANGE PRODUCTS
+  - handle = matches /products/[handle]
+  - buyButtonId = Shopify PRODUCT ID (numbers only)
+  - image must exist in /public/images
+*/
+
+const products = [
+  {
+    name: "Instant Cooling Towel",
+    handle: "instant-cooling-towel",
+    price: "$14.99",
+    image: "/images/cooling-towel.jpg",
+    buyButtonId: "9159178092759",
+  },
+  {
+    name: "Cooling Towel 2-Pack",
+    handle: "cooling-towel-2-pack",
+    price: "$24.99",
+    image: "/images/cooling-towel-2-pack.jpg",
+    buyButtonId: "7582488690767",
+  },
+  {
+    name: "Cooling Neck Wrap",
+    handle: "cooling-neck-wrap",
+    price: "$18.99",
+    image: "/images/cooling-neck-wrap.jpg",
+    buyButtonId: "9159178158295",
+  },
+];
 
 declare global {
   interface Window {
@@ -12,43 +54,15 @@ declare global {
   }
 }
 
-/* =========================
-   PRODUCT CONFIG
-   ========================= */
-
-const products = [
-  {
-    name: "Instant Cooling Towel",
-    price: "$14.99",
-    image: "/images/cooling-towel.jpg",
-    buyButtonId: "9159178092759",
-  },
-  {
-    name: "Cooling Towel 2-Pack",
-    price: "$24.99",
-    image: "/images/cooling-towel-2-pack.jpg",
-    buyButtonId: "7582488690767",
-  },
-  {
-    name: "Cooling Neck Wrap",
-    price: "$18.99",
-    image: "/images/cooling-neck-wrap.jpg",
-    buyButtonId: "9159178158295",
-  },
-];
-
-/* =========================
-   PAGE
-   ========================= */
-
 export default function Page() {
-	const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
-useEffect(() => {
-  setLoaded(true);
-}, [])
+  /* Fade-in on mount */
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
 
-  /* LOAD SHOPIFY BUY BUTTON SDK */
+  /* Load Shopify Buy Button SDK */
   useEffect(() => {
     if (window.ShopifyBuy) return;
 
@@ -59,17 +73,18 @@ useEffect(() => {
     document.body.appendChild(script);
   }, []);
 
-  /* INITIALIZE BUY BUTTONS */
+  /* Initialize Buy Buttons */
   useEffect(() => {
+    if (!SHOPIFY_TOKEN) return;
+
     const interval = setInterval(() => {
       if (!window.ShopifyBuy || !window.ShopifyBuy.UI) return;
 
       clearInterval(interval);
 
       const client = window.ShopifyBuy.buildClient({
-        domain: "coolwave-essentials.myshopify.com",
-        storefrontAccessToken:
-          process.env.NEXT_PUBLIC_SHOPIFY_BUY_TOKEN!,
+        domain: SHOPIFY_DOMAIN,
+        storefrontAccessToken: SHOPIFY_TOKEN,
       });
 
       window.ShopifyBuy.UI.onReady(client).then((ui: any) => {
@@ -84,7 +99,6 @@ useEffect(() => {
             node,
             options: {
               product: {
-                layout: "vertical",
                 contents: {
                   img: false,
                   title: false,
@@ -108,23 +122,23 @@ useEffect(() => {
 
   return (
     <main
-  className={`min-h-screen bg-gradient-to-b from-sky-50 to-white transition-opacity duration-700 ${
-    loaded ? "opacity-100" : "opacity-0"
-  }`}
->
+      className={`min-h-screen bg-gradient-to-b from-sky-50 to-white transition-opacity duration-700 ${
+        loaded ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      {/* HEADER */}
+      <header className="max-w-6xl mx-auto px-6 pt-6">
+        <a href="/" className="inline-flex items-center">
+          <img
+            src="/images/coolwave-logo.png"
+            alt="Coolwave Essentials"
+            className="h-12 sm:h-14 w-auto"
+          />
+        </a>
+      </header>
+
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
-        {/* LOGO */}
-        <div className="flex justify-center mb-6">
-          <img
-			src="/images/coolwave-logo.png"
-			alt="Coolwave Essentials"
-			className="h-20 sm:h-24 w-auto mx-auto"
-			loading="eager"
-/>
-
-        </div>
-
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
           Beat Extreme Heat — Instantly
         </h1>
@@ -153,7 +167,7 @@ useEffect(() => {
       <section className="max-w-6xl mx-auto px-6 py-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product, index) => (
           <div
-            key={index}
+            key={product.handle}
             className="bg-white rounded-2xl shadow-md p-6 flex flex-col"
           >
             <img
@@ -166,11 +180,17 @@ useEffect(() => {
               {product.name}
             </h3>
 
-            <p className="text-lg font-bold mb-4">
-              {product.price}
-            </p>
+            <p className="text-lg font-bold mb-4">{product.price}</p>
 
-            {/* BUY BUTTON TARGET */}
+            {/* VIEW PRODUCT */}
+            <a
+              href={`/products/${product.handle}`}
+              className="mb-3 inline-flex items-center justify-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+            >
+              View Product
+            </a>
+
+            {/* SHOPIFY BUY BUTTON */}
             <div id={`buy-button-${index}`} className="mt-auto" />
           </div>
         ))}
