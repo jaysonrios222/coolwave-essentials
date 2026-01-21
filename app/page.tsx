@@ -1,6 +1,11 @@
 "use client";
+const [loaded, setLoaded] = useState(false);
+useEffect(() => {
+  setLoaded(true);
+}, []);
 
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { Snowflake, Sun, Droplets, ShieldCheck, Truck, Star } from "lucide-react";
 
 declare global {
@@ -98,8 +103,10 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white transition-opacity duration-700 opacity-0"
-     onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+    <main
+  className={`min-h-screen bg-gradient-to-b from-sky-50 to-white transition-opacity duration-700 ${
+    loaded ? "opacity-100" : "opacity-0"
+  }`}
 >
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
