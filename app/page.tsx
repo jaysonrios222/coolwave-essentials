@@ -1,124 +1,71 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getProducts } from "@/lib/getProducts";
 import {
   Snowflake,
-  Sun,
   Droplets,
+  Sun,
   ShieldCheck,
   Truck,
   Star,
 } from "lucide-react";
 
-/* =========================
-   SHOPIFY CONFIG (EDIT HERE ONLY)
-   ========================= */
-
-const SHOPIFY_DOMAIN = "coolwave-essentials.myshopify.com";
-const SHOPIFY_TOKEN = process.env.NEXT_PUBLIC_SHOPIFY_BUY_TOKEN;
-
-/*
-  👉 HOW TO ADD / CHANGE PRODUCTS
-  - handle = matches /products/[handle]
-  - buyButtonId = Shopify PRODUCT ID (numbers only)
-  - image must exist in /public/images
-*/
-
-const products = [
-  {
-    name: "Instant Cooling Towel",
-    handle: "instant-cooling-towel",
-    price: "$14.99",
-    image: "/images/cooling-towel.jpg",
-    buyButtonId: "9159178092759",
-  },
-  {
-    name: "Cooling Towel 2-Pack",
-    handle: "cooling-towel-2-pack",
-    price: "$24.99",
-    image: "/images/cooling-towel-2-pack.jpg",
-    buyButtonId: "7582488690767",
-  },
-  {
-    name: "Cooling Neck Wrap",
-    handle: "cooling-neck-wrap",
-    price: "$18.99",
-    image: "/images/cooling-neck-wrap.jpg",
-    buyButtonId: "9159178158295",
-  },
-];
-
-declare global {
-  interface Window {
-    ShopifyBuy: any;
-  }
-}
+type ShopifyProduct = {
+  handle: string;
+  title: string;
+  description: string;
+  image: string;
+  variants: {
+    id: string;
+    price: string;
+  }[];
+};
 
 export default function Page() {
   const [loaded, setLoaded] = useState(false);
+  const [products, setProducts] = useState<ShopifyProduct[]>([]);
 
-  /* Fade-in on mount */
+  /* Fade-in (mobile safe) */
   useEffect(() => {
     setLoaded(true);
   }, []);
 
-  /* Load Shopify Buy Button SDK */
+  /* Fetch products from Shopify */
   useEffect(() => {
-    if (window.ShopifyBuy) return;
+    async function loadProducts() {
+      const data = await getProducts();
 
-    const script = document.createElement("script");
-    script.src =
-      "https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js";
-    script.async = true;
-    document.body.appendChild(script);
+      const parsed: ShopifyProduct[] = data.products.edges.map(
+        ({ node }) => ({
+          handle: node.handle,
+          title: node.title,
+          description: node.description,
+          image: node.images.edges[0]?.node.url ?? "",
+          variants: node.variants.edges.map(({ node: v }) => ({
+            id: v.id,
+            price: v.price.amount,
+          })),
+        })
+      );
+
+      setProducts(parsed);
+    }
+
+    loadProducts();
   }, []);
 
-  /* Initialize Buy Buttons */
-  useEffect(() => {
-    if (!SHOPIFY_TOKEN) return;
+  async function handleBuy(variantId: string) {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ variantId }),
+    });
 
-    const interval = setInterval(() => {
-      if (!window.ShopifyBuy || !window.ShopifyBuy.UI) return;
-
-      clearInterval(interval);
-
-      const client = window.ShopifyBuy.buildClient({
-        domain: SHOPIFY_DOMAIN,
-        storefrontAccessToken: SHOPIFY_TOKEN,
-      });
-
-      window.ShopifyBuy.UI.onReady(client).then((ui: any) => {
-        products.forEach((product, index) => {
-          const node = document.getElementById(`buy-button-${index}`);
-          if (!node) return;
-
-          node.innerHTML = "";
-
-          ui.createComponent("product", {
-            id: product.buyButtonId,
-            node,
-            options: {
-              product: {
-                contents: {
-                  img: false,
-                  title: false,
-                  price: false,
-                },
-                text: {
-                  button: "Buy Now",
-                },
-              },
-              cart: {
-                startOpen: false,
-              },
-            },
-          });
-        });
-      });
-    }, 200);
-
-    return () => clearInterval(interval);
-  }, []);
+    const data = await res.json();
+    window.location.href = data.checkoutUrl;
+  }
 
   return (
     <main
@@ -127,18 +74,18 @@ export default function Page() {
       }`}
     >
       {/* HEADER */}
-      <header className="max-w-6xl mx-auto px-6 pt-6">
-        <a href="/" className="inline-flex items-center">
+      <header className="max-w-6xl mx-auto px-6 py-6 flex items-center">
+        <Link href="/" className="flex items-center">
           <img
             src="/images/coolwave-logo.png"
             alt="Coolwave Essentials"
-            className="h-12 sm:h-14 w-auto"
+            className="h-14 sm:h-16 w-auto"
           />
-        </a>
+        </Link>
       </header>
 
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
+      <section className="max-w-6xl mx-auto px-6 text-center pt-6">
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
           Beat Extreme Heat — Instantly
         </h1>
@@ -165,33 +112,46 @@ export default function Page() {
 
       {/* PRODUCTS */}
       <section className="max-w-6xl mx-auto px-6 py-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product, index) => (
+        {products.map((product) => (
           <div
             key={product.handle}
             className="bg-white rounded-2xl shadow-md p-6 flex flex-col"
           >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full aspect-[4/3] object-cover rounded-xl mb-4"
-            />
+            <Link href={`/products/${product.handle}`}>
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-full aspect-[4/3] object-cover rounded-xl mb-4"
+              />
+            </Link>
 
-            <h3 className="text-xl font-semibold mb-2">
-              {product.name}
+            <h3 className="text-xl font-semibold mb-1">
+              {product.title}
             </h3>
 
-            <p className="text-lg font-bold mb-4">{product.price}</p>
+            <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+              {product.description}
+            </p>
 
-            {/* VIEW PRODUCT */}
-            <a
-              href={`/products/${product.handle}`}
-              className="mb-3 inline-flex items-center justify-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
-            >
-              View Product
-            </a>
+            <p className="text-lg font-bold mb-4">
+              ${product.variants[0]?.price}
+            </p>
 
-            {/* SHOPIFY BUY BUTTON */}
-            <div id={`buy-button-${index}`} className="mt-auto" />
+            <div className="mt-auto flex flex-col gap-3">
+              <button
+                onClick={() => handleBuy(product.variants[0].id)}
+                className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl py-3 font-semibold transition"
+              >
+                Buy Now
+              </button>
+
+              <Link
+                href={`/products/${product.handle}`}
+                className="text-center text-sm font-medium text-sky-600 hover:underline"
+              >
+                View Product
+              </Link>
+            </div>
           </div>
         ))}
       </section>
