@@ -29,46 +29,75 @@ export default function CoolingStore() {
       buyButtonId: "PRODUCT_ID_3",
     },
   ];
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  if ((window as any).ShopifyBuy) return;
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src =
+    "https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js";
+
+  document.body.appendChild(script);
+
+  return () => {
+    document.body.removeChild(script);
+  };
+}, []);
+
 	// Buy Button Initialization
 	useEffect(() => {
-  if (!(window as any).ShopifyBuy || !(window as any).ShopifyBuy.UI) return;
+  if (typeof window === "undefined") return;
 
-  const client = (window as any).ShopifyBuy.buildClient({
-    domain: "coolwave-essentials.myshopify.com",
-    storefrontAccessToken: "YOUR_BUY_BUTTON_TOKEN",
-  });
+  const interval = setInterval(() => {
+    const ShopifyBuy = (window as any).ShopifyBuy;
 
-  (window as any).ShopifyBuy.UI.onReady(client).then((ui: any) => {
-    products.forEach((product, index) => {
-      const node = document.getElementById(`buy-button-${index}`);
-      if (!node) return;
+    if (!ShopifyBuy || !ShopifyBuy.UI) return;
 
-      node.innerHTML = "";
+    clearInterval(interval);
 
-      ui.createComponent("product", {
-        id: product.buyButtonId,
-        node,
-        options: {
-          product: {
-            layout: "vertical",
-            buttonDestination: "checkout",
-            contents: {
-              img: false,
-              title: false,
-              price: false,
+    const client = ShopifyBuy.buildClient({
+      domain: "coolwave-essentials.myshopify.com",
+      storefrontAccessToken:
+        process.env.NEXT_PUBLIC_SHOPIFY_BUY_TOKEN,
+    });
+
+    ShopifyBuy.UI.onReady(client).then((ui: any) => {
+      products.forEach((product, index) => {
+        const node = document.getElementById(`buy-button-${index}`);
+        if (!node) return;
+
+        node.innerHTML = "";
+
+        ui.createComponent("product", {
+          id: product.buyButtonId, // MUST be numeric
+          node,
+          options: {
+            product: {
+              layout: "vertical",
+              buttonDestination: "checkout",
+              contents: {
+                img: false,
+                title: false,
+                price: false,
+              },
+              text: {
+                button: "Buy Now",
+              },
             },
-            text: {
-              button: "Buy Now",
+            cart: {
+              startOpen: false,
             },
           },
-          cart: {
-            startOpen: false,
-          },
-        },
+        });
       });
     });
-  });
+  }, 200);
+
+  return () => clearInterval(interval);
 }, []);
+
 
   // Auto-slide carousel (mobile safe)
   useEffect(() => {
