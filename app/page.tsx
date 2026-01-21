@@ -98,17 +98,18 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white opacity-0 animate-[fadeIn_0.6s_ease-out_forwards]">
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
         {/* LOGO */}
         <div className="flex justify-center mb-6">
           <img
-            src="/images/coolwave-logo.png"
-            alt="Coolwave Essentials"
-            className="h-14 sm:h-16 w-auto"
-            loading="eager"
-          />
+			src="/images/coolwave-logo.png"
+			alt="Coolwave Essentials"
+			className="h-20 sm:h-24 w-auto mx-auto"
+			loading="eager"
+/>
+
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
