@@ -1,13 +1,16 @@
 const SHOPIFY_DOMAIN =
-  process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN ||
+  process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN ??
   "coolwave-essentials.myshopify.com";
 
 const SHOPIFY_STOREFRONT_TOKEN =
   process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN;
 
 if (!SHOPIFY_STOREFRONT_TOKEN) {
-  throw new Error("Missing Shopify Storefront API token");
+  throw new Error(
+    "Missing NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN"
+  );
 }
+
 
 export async function shopifyFetch<T>({
   query,
@@ -21,9 +24,10 @@ export async function shopifyFetch<T>({
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token":
-          SHOPIFY_STOREFRONT_TOKEN,
+  "Content-Type": "application/json",
+  "X-Shopify-Storefront-Access-Token":
+    SHOPIFY_STOREFRONT_TOKEN as string,
+
       },
       body: JSON.stringify({
         query,
