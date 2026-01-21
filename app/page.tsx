@@ -1,9 +1,6 @@
-"use client";
-const [loaded, setLoaded] = useState(false);
-useEffect(() => {
-  setLoaded(true);
-}, []);
+export const dynamic = "force-dynamic";
 
+"use client";
 
 import { useEffect, useState } from "react";
 import { Snowflake, Sun, Droplets, ShieldCheck, Truck, Star } from "lucide-react";
@@ -44,6 +41,12 @@ const products = [
    ========================= */
 
 export default function Page() {
+	const [loaded, setLoaded] = useState(false);
+
+useEffect(() => {
+  setLoaded(true);
+}, [])
+
   /* LOAD SHOPIFY BUY BUTTON SDK */
   useEffect(() => {
     if (window.ShopifyBuy) return;
