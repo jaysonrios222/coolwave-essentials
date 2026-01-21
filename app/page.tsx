@@ -29,6 +29,46 @@ export default function CoolingStore() {
       buyButtonId: "PRODUCT_ID_3",
     },
   ];
+	// Buy Button Initialization
+	useEffect(() => {
+  if (!(window as any).ShopifyBuy || !(window as any).ShopifyBuy.UI) return;
+
+  const client = (window as any).ShopifyBuy.buildClient({
+    domain: "coolwave-essentials.myshopify.com",
+    storefrontAccessToken: "YOUR_BUY_BUTTON_TOKEN",
+  });
+
+  (window as any).ShopifyBuy.UI.onReady(client).then((ui: any) => {
+    products.forEach((product, index) => {
+      const node = document.getElementById(`buy-button-${index}`);
+      if (!node) return;
+
+      node.innerHTML = "";
+
+      ui.createComponent("product", {
+        id: product.buyButtonId,
+        node,
+        options: {
+          product: {
+            layout: "vertical",
+            buttonDestination: "checkout",
+            contents: {
+              img: false,
+              title: false,
+              price: false,
+            },
+            text: {
+              button: "Buy Now",
+            },
+          },
+          cart: {
+            startOpen: false,
+          },
+        },
+      });
+    });
+  });
+}, []);
 
   // Auto-slide carousel (mobile safe)
   useEffect(() => {
@@ -160,42 +200,3 @@ export default function CoolingStore() {
     </div>
   );
 }
-useEffect(() => {
-  if (!(window as any).ShopifyBuy || !(window as any).ShopifyBuy.UI) return;
-
-  const client = (window as any).ShopifyBuy.buildClient({
-    domain: "coolwave-essentials.myshopify.com",
-    storefrontAccessToken: "YOUR_BUY_BUTTON_TOKEN",
-  });
-
-  (window as any).ShopifyBuy.UI.onReady(client).then((ui: any) => {
-    products.forEach((product, index) => {
-      const node = document.getElementById(`buy-button-${index}`);
-      if (!node) return;
-
-      node.innerHTML = "";
-
-      ui.createComponent("product", {
-        id: product.buyButtonId,
-        node,
-        options: {
-          product: {
-            layout: "vertical",
-            buttonDestination: "checkout",
-            contents: {
-              img: false,
-              title: false,
-              price: false,
-            },
-            text: {
-              button: "Buy Now",
-            },
-          },
-          cart: {
-            startOpen: false,
-          },
-        },
-      });
-    });
-  });
-}, []);
