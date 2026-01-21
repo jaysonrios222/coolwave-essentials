@@ -18,7 +18,7 @@ const products = [
     name: "Instant Cooling Towel",
     price: "$14.99",
     image: "/images/cooling-towel.jpg",
-    buyButtonId: "7582488690766", // ✅ numeric Shopify product ID
+    buyButtonId: "9159178092759", // ✅ numeric Shopify product ID
   },
   {
     name: "Cooling Towel 2-Pack",
@@ -30,7 +30,7 @@ const products = [
     name: "Cooling Neck Wrap",
     price: "$18.99",
     image: "/images/cooling-neck-wrap.jpg",
-    buyButtonId: "7582488690768",
+    buyButtonId: "9159178158295",
   },
 ];
 
@@ -100,7 +100,41 @@ export default function Page() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-16 text-center">
+      <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
+  {/* LOGO */}
+  <div className="flex justify-center mb-6">
+    <img
+      src="/images/coolwave-logo.png"
+      alt="Coolwave Essentials"
+      className="h-14 sm:h-16 w-auto"
+      loading="eager"
+    />
+  </div>
+
+  <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+    Beat Extreme Heat — Instantly
+  </h1>
+
+  <p className="text-lg text-gray-600 mb-8">
+    Reusable cooling solutions built for hot climates.
+  </p>
+
+  <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+    <div className="flex items-center gap-2">
+      <Snowflake className="h-4 w-4 text-sky-500" />
+      Instant Cooling
+    </div>
+    <div className="flex items-center gap-2">
+      <Droplets className="h-4 w-4 text-sky-500" />
+      Reusable
+    </div>
+    <div className="flex items-center gap-2">
+      <Sun className="h-4 w-4 text-sky-500" />
+      Extreme Heat Ready
+    </div>
+  </div>
+</section>
+
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
           Beat Extreme Heat — Instantly
         </h1>
