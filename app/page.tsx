@@ -98,7 +98,7 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white opacity-0 animate-[fadeIn_0.6s_ease-out_forwards]">
+    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
         {/* LOGO */}
