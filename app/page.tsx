@@ -98,7 +98,9 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white transition-opacity duration-700 opacity-0"
+     onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+>
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
         {/* LOGO */}
