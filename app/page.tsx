@@ -18,7 +18,7 @@ const products = [
     name: "Instant Cooling Towel",
     price: "$14.99",
     image: "/images/cooling-towel.jpg",
-    buyButtonId: "9159178092759", // ✅ numeric Shopify product ID
+    buyButtonId: "9159178092759",
   },
   {
     name: "Cooling Towel 2-Pack",
@@ -60,7 +60,7 @@ export default function Page() {
       const client = window.ShopifyBuy.buildClient({
         domain: "coolwave-essentials.myshopify.com",
         storefrontAccessToken:
-          process.env.NEXT_PUBLIC_SHOPIFY_BUY_TOKEN,
+          process.env.NEXT_PUBLIC_SHOPIFY_BUY_TOKEN!,
       });
 
       window.ShopifyBuy.UI.onReady(client).then((ui: any) => {
@@ -101,25 +101,20 @@ export default function Page() {
     <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white">
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-12 text-center">
-  {/* LOGO */}
-  <div className="flex justify-center mb-6">
-    <img
-      src="/images/coolwave-logo.png"
-      alt="Coolwave Essentials"
-      className="h-14 sm:h-16 w-auto"
-      loading="eager"
-    />
-  </div>
-
-  <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-    Beat Extreme Heat — Instantly
-  </h1>
-
-</section>
+        {/* LOGO */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="/images/coolwave-logo.png"
+            alt="Coolwave Essentials"
+            className="h-14 sm:h-16 w-auto"
+            loading="eager"
+          />
+        </div>
 
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
           Beat Extreme Heat — Instantly
         </h1>
+
         <p className="text-lg text-gray-600 mb-8">
           Reusable cooling solutions built for hot climates.
         </p>
@@ -156,7 +151,10 @@ export default function Page() {
             <h3 className="text-xl font-semibold mb-2">
               {product.name}
             </h3>
-            <p className="text-lg font-bold mb-4">{product.price}</p>
+
+            <p className="text-lg font-bold mb-4">
+              {product.price}
+            </p>
 
             {/* BUY BUTTON TARGET */}
             <div id={`buy-button-${index}`} className="mt-auto" />
